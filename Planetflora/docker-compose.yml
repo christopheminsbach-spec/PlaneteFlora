@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: planet_flora_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: planet_flora
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build: ./backend
+    container_name: planet_flora_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: planet_flora
+
+  frontend:
+    build: ./frontend
+    container_name: planet_flora_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
